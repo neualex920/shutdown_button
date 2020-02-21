@@ -1,68 +1,72 @@
-# Combined Restart / Shutdown Button for Raspberry Pi
+# Shutdown Button for Raspberry Pi
 
 A very simple systemd service for Raspberry Pi that provides a
 software-controlled restart / shutdown button.
 
-## Use
+You can make a ON/OFF button for your Crankshaft head unit using `GPIO3` and `GPIO27` pins.
 
-Default behaviour is:
+Note: You need a 5 pin relay and the shutdown/reboot script.
 
-* your Raspberry Pi will *reset* if the button is held for more than two
-  seconds but fewer than five seconds;
+## Instructions
 
-* your Raspberry Pi will *shut down* if the button is held for more than five
-  seconds.
+### Boot
 
-By default, the software assumes the switch is connected to pin [BCM
-27](https://pinout.xyz/pinout/pin13_gpio27#). Both the pin and the
-timing can be changed in the Python source file.
+`GPIO3` wakes up the Pi from halt state by default (short pin 5 to ground)
 
-## Requirements
+### Reboot/shutdown
 
-### Hardware
+This [reboot/shutdown script](https://github.com/scruss/shutdown_button) could be helpful.
 
-* A Raspberry Pi (tested on a model 2B, 3B and Zero, and on a model B after minor software modification)
+If you buy a simple 12 volt relay you can trigger boot / shutdown with your car's ignition.
 
-* A normally open, momentary contact button. I use surplus ATX power
-  buttons (as used on desktop PCs), as they're cheap and come with a
-  handy set of wires and header connectors. Virtually any button will
-  do the job, though. Just make sure it's normally open (push to close).
+Same like any car stereo works.
 
-### Software
+You need to connect the coil of the relay (pin86) to your switched power line (the line which is powered when ignition is on) and (pin85) to ground.
+The switch contact 87 of the relay (normally OPEN) you connect to pin 5 (GPIO3).
+The switch contact 87a of the relay (normally CLOSE) you connect to pin 13 (GPIO27).
+The common contact 30 of the relay you connect to pin 6 (GROUND)
 
-* A Debian-based operating system that uses systemd (tested on Jessie and Stretch)
-  
-* the `python3-gpiozero` package to provide [GPIO
-  Zero](https://gpiozero.readthedocs.io/en/stable/) (tested on version 1.4.0)
+### Function
 
-## Installation
+When you turn on the ignition the relay gets 12 volts and closes the relay Switch(87/30).
+This sets GPIO3 to LOW and your Pi will boot.
 
-### Hardware
+When you turn the ignition OFF  the relay closes the Switch contacts(87a/30) and GPIO27 is set LOW. The Pi shuts down when ignition is off for at least 5 seconds (TIME is setable in the script)
 
-#### 40-pin GPIO connector (B+, 2B, 3B, Zero)
+## Relay with wiring harness
 
-Connect the button between GPIO 27 and GND. If you use an ATX power
-button and a Raspberry Pi with a 40-pin GPIO header, connect it across
-the seventh column from the left:
+![](https://www.amazon.com/gp/product/B01N66W2XF/)
 
-                -
-    · · · · · ·|·|· · · · · · · · · · · · · 
-    · · · · · ·|·|· · · · · · · · · · · · · 
-                -
+https://www.amazon.com/gp/product/B01N66W2XF/
 
-This shorts GPIO 27 (physical pin 13) to ground (physical pin 14) when
-the button is pressed.
+Above is a link to Amazon but any other 12 volt/5 pin relay will work!
 
-#### 26-pin GPIO connector (models B and A only)
+## Relay connectors
 
-GPIO 27 is not exposed on the original Raspberry Pi header, so [GPIO 17](https://pinout.xyz/pinout/pin11_gpio17#) is a reasonable option. If you use an ATX power button and a Raspberry Pi with a 26-pin GPIO header, connect it across the fifth and sixth columns of the second row:
+```
+pin 86=   SWITCHED power(ignition)
+pin 85=   Chassis Ground (Vehicle electrical system ground)
+pin 30=   GPIO Physical Pin 6 or USB ground(Raspberry Pi/USB Ground)
+pin 87a=  GPIO Physical Pin 13 (RPI GPIO 27)
+pin 87=   GPIO Physical Pin 5 (RPI GPIO 3)
+```
+**Raspberry Pi GPIO pins:** https://www.raspberrypi.org/documentation/usage/gpio/images/gpio-pins-pi2.jpg
 
-    . . . . ._. . . . . . . .
-    . . . .|. .|. . . . . . .
-             -
-You will also need to change [line 7 of shutdown_button.py](https://github.com/scruss/shutdown_button/blob/master/shutdown_button.py#L7) to read:
+**Raspberry Pi GPIO Pin Numbers:** https://www.raspberrypi.org/documentation/usage/gpio/images/gpio-numbers-pi2.png
 
-    use_button=17
+**Relay Wiring Pinout:** https://images-na.ssl-images-amazon.com/images/I/71vF%2BJbm5bL._SL1500_.jpg
+
+
+NOTE:
+
+You can edit the shutdown and reboot times in the script.
+Default time for reboot is 2 seconds and default time for shutdown is 5 seconds.
+
+That means if you turn the car's ignition OFF the Pi will shutdown after 5 seconds.
+But if you turn the ignition OFF for just 2 seconds, then turn the ignition ON again, the Pi will reboot.
+I suggest setting the reboot time to 5 seconds and the shutdown time to 10 seconds to avoid unwanted reboots when starting your car's engine which causes the relay to lose power.
+
+P.S. Note: Unfortunately GPIO3 is on the same pin as SCL. So if you keep this pin grounded with a relay when the car, and the pi, are on, you can't use I2C.
 
 ### Software
 
@@ -182,9 +186,10 @@ From GPIO Zero's `pinout` command
     GPIO11 (23) (24) GPIO8 
        GND (25) (26) GPIO7 
     
-## Author
+## Refrences
 
 Stewart C. Russell — [scruss.com](https://scruss.com/blog/) —
 [@scruss](https://twitter.com/scruss).
 
-Writeup (with some pictures): http://scruss.com/blog/2017/10/21/combined-restart-shutdown-button-for-raspberry-pi/
+opencardev
+
