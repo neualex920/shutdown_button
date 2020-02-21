@@ -15,8 +15,6 @@ Note: You need a 5 pin relay and the shutdown/reboot script.
 
 ### Reboot/shutdown
 
-This [reboot/shutdown script](https://github.com/scruss/shutdown_button) could be helpful.
-
 If you buy a simple 12 volt relay you can trigger boot / shutdown with your car's ignition.
 
 Same like any car stereo works.
