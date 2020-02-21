@@ -54,16 +54,6 @@ pin 87=   GPIO Physical Pin 5 (RPI GPIO 3)
 
 **Relay Wiring Pinout:** https://images-na.ssl-images-amazon.com/images/I/71vF%2BJbm5bL._SL1500_.jpg
 
-
-NOTE:
-
-You can edit the shutdown and reboot times in the script.
-Default time for reboot is 2 seconds and default time for shutdown is 5 seconds.
-
-That means if you turn the car's ignition OFF the Pi will shutdown after 5 seconds.
-But if you turn the ignition OFF for just 2 seconds, then turn the ignition ON again, the Pi will reboot.
-I suggest setting the reboot time to 5 seconds and the shutdown time to 10 seconds to avoid unwanted reboots when starting your car's engine which causes the relay to lose power.
-
 P.S. Note: Unfortunately GPIO3 is on the same pin as SCL. So if you keep this pin grounded with a relay when the car, and the pi, are on, you can't use I2C.
 
 ### Software
